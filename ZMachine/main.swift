@@ -3,9 +3,6 @@
 //  ZMachine
 //
 
-import Foundation
-
-let version_address = ByteAddress(0)
 let story = Story.load("zcode/minizork.z3")
 
 for x in 0...95 {
