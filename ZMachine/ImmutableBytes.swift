@@ -3,16 +3,18 @@
 //  ZMachine
 //
 
+typealias MemoryMap = Map<Int, Char>
+
 struct ImmutableBytes {
     let original_bytes: CharString
-    let edits: Map<Int, Char>
+    let edits: MemoryMap
     
     init(bytes: CharString) {
         self.original_bytes = bytes
-        self.edits = Map<Int, Char>()
+        self.edits = MemoryMap()
     }
     
-    init(bytes: CharString, edits: Map<Int, Char>) {
+    init(bytes: CharString, edits: MemoryMap) {
         self.original_bytes = bytes
         self.edits = edits
     }

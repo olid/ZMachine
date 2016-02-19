@@ -8,7 +8,7 @@ typealias Word = Int
 typealias CharString = [Char]
 
 extension Int {
-    var asBinary: String {
+    var toBinaryString: String {
         return (0...15).reduce("") {
             $0 + "\( self >> (15 - $1) & 0x1 )"
         }
@@ -29,8 +29,7 @@ extension Array {
     }
     
     static func sub(a: Array, start: Int, length: Int) -> Array {
-        let slice = a[start..<(start + length)]
-        return Array(slice)
+        return Array(a[start..<(start + length)])
     }
 }
 
