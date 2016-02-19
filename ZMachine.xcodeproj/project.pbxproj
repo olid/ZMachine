@@ -70,11 +70,11 @@
 			isa = PBXGroup;
 			children = (
 				6F6C3AE61C77AFF10009D71C /* main.swift */,
-				6F6C3AE41C77AFF10009D71C /* File.swift */,
 				6F6C3AE51C77AFF10009D71C /* ImmutableBytes.swift */,
 				6F6C3AE71C77AFF10009D71C /* Memory.swift */,
 				6F6C3AE81C77AFF10009D71C /* Story.swift */,
 				6F6C3AE91C77AFF10009D71C /* ZString.swift */,
+				6F6C3AE41C77AFF10009D71C /* File.swift */,
 				6F6C3AE31C77AFF10009D71C /* Extensions.swift */,
 			);
 			path = ZMachine;
