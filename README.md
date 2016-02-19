@@ -6,10 +6,9 @@ Starts looking for your `.z3` files relative to `~/documents`.
 
 There are a few hacks in `Extensions.swift` to make the code more similar to the OCaml, and the code is definitely not idiomatic Swift in many places, but it's a fun learning excercise!
 
-This is not endorsed in any way by Eric.
+This is not endorsed in any way by anyone.
 
 ## Eric Lippert's Blog Posts
-* http://ericlippert.com/
 * ['West of House'](http://ericlippert.com/2016/02/01/west-of-house/)
 * ['North of House'](http://ericlippert.com/2016/02/03/north-of-house/)
 * ['Forest Path'](http://ericlippert.com/2016/02/05/forest_path/)
