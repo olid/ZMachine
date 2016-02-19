@@ -8,4 +8,4 @@ There are a few hacks in Extensions.swift to make the code more similar to OCaml
 
 ## Eric Lippert's Blog Posts
 * http://ericlippert.com/
-* (http://ericlippert.com/2016/02/19/cellar/ "Cellar")
+* ['Cellar'](http://ericlippert.com/2016/02/19/cellar/)
