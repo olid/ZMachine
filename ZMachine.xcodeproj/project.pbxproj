@@ -29,7 +29,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6F57F3501C77B50A00E22CA2 /* ZString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZString.swift; sourceTree = "<group>"; };
 		6F6C3AD91C77AF9B0009D71C /* ZMachine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZMachine; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F6C3AE31C77AFF10009D71C /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		6F6C3AE41C77AFF10009D71C /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -54,7 +53,6 @@
 		6F6C3AD01C77AF9B0009D71C = {
 			isa = PBXGroup;
 			children = (
-				6F57F3501C77B50A00E22CA2 /* ZString.swift */,
 				6F6C3ADB1C77AF9B0009D71C /* ZMachine */,
 				6F6C3ADA1C77AF9B0009D71C /* Products */,
 			);
