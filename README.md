@@ -8,7 +8,7 @@ There are a few hacks in `Extensions.swift` to make the code more similar to the
 
 This is not endorsed in any way by anyone.
 
-## Eric Lippert's Blog Posts
+#### Eric Lippert's Blog Posts
 * ['West of House'](http://ericlippert.com/2016/02/01/west-of-house/)
 * ['North of House'](http://ericlippert.com/2016/02/03/north-of-house/)
 * ['Forest Path'](http://ericlippert.com/2016/02/05/forest_path/)
