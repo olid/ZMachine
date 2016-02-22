@@ -4,6 +4,7 @@
 //
 
 typealias Char = Int
+typealias ZChar = Int
 typealias Word = Int
 typealias CharString = [Char]
 

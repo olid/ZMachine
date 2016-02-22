@@ -50,6 +50,10 @@ func fetch_bits(high: BitNumber, length: BitSize, word: Int) -> Int {
     return (word >> (high - length + 1)) & mask
 }
 
+func fetch_bit(high: BitNumber, word: Int) -> Bool {
+    return fetch_bits(high, length: 1, word: word) == 1
+}
+
 func is_in_range(address: ByteAddress, size: Int) -> Bool {
     return 0 <= address && address < size
 }
@@ -126,8 +130,12 @@ func write_word(story: Story, address: ByteAddress, value: Word) -> Story {
     return write_byte(story, address: address_of_low_byte(address), value: low)
 }
 
+func string_of_char(char: ZChar) -> String {
+    return String(UnicodeScalar(char))
+}
+
 func charstring_to_string(char_string: CharString) -> String {
     return char_string.reduce("") {
-        $0 + String(UnicodeScalar($1))
+        $0 + string_of_char($1)
     }
 }

@@ -42,6 +42,50 @@ struct ZString {
         }
     }
     
+    static func read(story: Story, address: ZStringAddress) -> String {
+        func process_zchar(zchar: ZChar, state: StringState) -> (String, StringState) {
+            switch (zchar, state) {
+                case (1, .Alphabet): return ("", abbrev0)
+                case (2, .Alphabet): return ("", abbrev32)
+                case (3, .Alphabet): return ("", abbrev64)
+                case (4, .Alphabet): return ("", alphabet1)
+                case (5, .Alphabet): return ("", alphabet2)
+                case (6, .Alphabet(2)): return ("", .Leading)
+                case (_, .Alphabet(let a)): return (alphabet_table[a][zchar], alphabet0)
+                case (_, .Abbrev(let a)):
+                    let abbrv = AbbreviationNumber(a + zchar)
+                    let addr = abbreviation_zstring(story, n: abbrv)
+                    let str = read(story, address: addr)
+                    return (str, alphabet0)
+                case (_, .Leading): return ("", (.Trailing(zchar)))
+                case (_, .Trailing(let high)):
+                    let s = string_of_char(high * 32 + zchar)
+                    return (s, alphabet0)
+            }
+        }
+        
+        func aux(acc: String, state1: StringState, current_address: ZStringAddress) -> String {
+            let zchar_bit_size = size5
+            let word = read_word(story, address: current_address)
+            let is_end = fetch_bit(bit15, word: word)
+            let zchar1 = ZChar(fetch_bits(bit14, length: zchar_bit_size, word: word))
+            let zchar2 = ZChar(fetch_bits(bit9, length: zchar_bit_size, word: word))
+            let zchar3 = ZChar(fetch_bits(bit4, length: zchar_bit_size, word: word))
+            let (text1, state2) = process_zchar(zchar1, state: state1)
+            let (text2, state3) = process_zchar(zchar2, state: state2)
+            let (text3, state_next) = process_zchar(zchar3, state: state3)
+            let new_acc = acc + text1 + text2 + text3
+            
+            if is_end {
+                return new_acc
+            } else {
+                return aux(new_acc, state1: state_next, current_address: (inc_word_addr(current_address)))
+            }
+        }
+        
+        return aux("", state1: alphabet0, current_address: WordAddress(address))
+    }
+    
     static func display_bytes(story: Story, addr: ZStringAddress) -> CharString {
         func aux(current: WordAddress, acc: String) -> String {
             let word = read_word(story, address: current)
@@ -59,3 +103,15 @@ struct ZString {
         return aux(WordAddress(addr), acc: "").charString
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
