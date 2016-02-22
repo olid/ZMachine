@@ -18,3 +18,4 @@ This is not endorsed in any way by anyone.
 * ['Living Room'](http://ericlippert.com/2016/02/15/living-room/)
 * ['Attic'](http://ericlippert.com/2016/02/17/attic/)
 * ['Cellar'](http://ericlippert.com/2016/02/19/cellar/)
+* ['Troll Room'](http://ericlippert.com/2016/02/22/troll-room/)
