@@ -44,6 +44,17 @@ let size14 = 14
 let size15 = 15
 let size16 = 16
 
+func accumulate_strings_loop(to_string: Int -> String, start: Int, max: Int) -> String {
+    func aux(acc: String, i: Int) -> String {
+        if i >= max {
+            return acc
+        } else {
+            return aux(acc + to_string(i), i: i + 1)
+        }
+    }
+    
+    return aux("", i: start)
+}
 
 func fetch_bits(high: BitNumber, length: BitSize, word: Int) -> Int {
     let mask = ~(0xffff << length)
@@ -64,6 +75,10 @@ func is_out_of_range(address: ByteAddress, size: Int) -> Bool {
 
 func inc_byte_addr_by(address: ByteAddress, offset: Int) -> ByteAddress {
     return ByteAddress(address + offset)
+}
+
+func inc_byte_addr(address: ByteAddress) -> ByteAddress {
+    return ByteAddress(address + 1)
 }
 
 func dec_byte_addr_by(address: ByteAddress, offset: Int) -> ByteAddress {

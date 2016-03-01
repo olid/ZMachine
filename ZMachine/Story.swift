@@ -42,6 +42,11 @@ struct Story {
             }
         }
     }
+    
+    static func dictionary_base(story: Story) -> DictionaryBase {
+        let dictionary_base_offset = WordAddress(8)
+        return DictionaryBase(read_word(story, address: dictionary_base_offset))
+    }
 }
 
 
