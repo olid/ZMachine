@@ -20,3 +20,4 @@ This is not endorsed in any way by anyone.
 * ['Cellar'](http://ericlippert.com/2016/02/19/cellar/)
 * ['Troll Room'](http://ericlippert.com/2016/02/22/troll-room/)
 * ['Round Room'](http://ericlippert.com/2016/02/24/round-room/)
+* ['Dome Room'] (http://ericlippert.com/2016/02/26/dome-room/)
