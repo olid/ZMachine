@@ -21,3 +21,4 @@ This is not endorsed in any way by anyone.
 * ['Troll Room'](http://ericlippert.com/2016/02/22/troll-room/)
 * ['Round Room'](http://ericlippert.com/2016/02/24/round-room/)
 * ['Dome Room'] (http://ericlippert.com/2016/02/26/dome-room/)
+* ['Temple'] (http://ericlippert.com/2016/02/29/temple/)
