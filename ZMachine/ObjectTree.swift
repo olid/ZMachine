@@ -1,7 +1,0 @@
-//
-//  ObjectTree.swift
-//  ZMachine
-//
-
-
-

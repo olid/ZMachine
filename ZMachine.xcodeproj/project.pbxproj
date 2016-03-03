@@ -15,7 +15,7 @@
 		6F6C3AEF1C77AFF10009D71C /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6C3AE81C77AFF10009D71C /* Story.swift */; };
 		6F6C3AF01C77AFF10009D71C /* ZString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6C3AE91C77AFF10009D71C /* ZString.swift */; };
 		6FC3F4F41C865E6F009E98C3 /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC3F4F31C865E6F009E98C3 /* Dictionary.swift */; };
-		6FC3F4F61C8664F1009E98C3 /* ObjectTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC3F4F51C8664F1009E98C3 /* ObjectTree.swift */; };
+		6FC3F4F61C8664F1009E98C3 /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC3F4F51C8664F1009E98C3 /* Object.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -40,7 +40,7 @@
 		6F6C3AE81C77AFF10009D71C /* Story.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Story.swift; sourceTree = "<group>"; };
 		6F6C3AE91C77AFF10009D71C /* ZString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZString.swift; sourceTree = "<group>"; };
 		6FC3F4F31C865E6F009E98C3 /* Dictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
-		6FC3F4F51C8664F1009E98C3 /* ObjectTree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectTree.swift; sourceTree = "<group>"; };
+		6FC3F4F51C8664F1009E98C3 /* Object.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +81,7 @@
 				6F6C3AE41C77AFF10009D71C /* File.swift */,
 				6F6C3AE31C77AFF10009D71C /* Extensions.swift */,
 				6FC3F4F31C865E6F009E98C3 /* Dictionary.swift */,
-				6FC3F4F51C8664F1009E98C3 /* ObjectTree.swift */,
+				6FC3F4F51C8664F1009E98C3 /* Object.swift */,
 			);
 			path = ZMachine;
 			sourceTree = "<group>";
@@ -151,7 +151,7 @@
 				6F6C3AEE1C77AFF10009D71C /* Memory.swift in Sources */,
 				6F6C3AEB1C77AFF10009D71C /* File.swift in Sources */,
 				6F6C3AEF1C77AFF10009D71C /* Story.swift in Sources */,
-				6FC3F4F61C8664F1009E98C3 /* ObjectTree.swift in Sources */,
+				6FC3F4F61C8664F1009E98C3 /* Object.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

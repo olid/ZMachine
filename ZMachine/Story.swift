@@ -80,6 +80,11 @@ struct Story {
             case .V4, .V5, .V6, .V7, .V8: return false
         }
     }
+    
+    static func object_table_base(story: Story) -> ObjectBase {
+        let object_table_base_offset = WordAddress(10)
+        return ObjectBase(read_word(story, address: object_table_base_offset))
+    }
 }
 
 
