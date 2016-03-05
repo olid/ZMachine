@@ -65,3 +65,22 @@ struct Map<K: Hashable, V: Hashable> {
         return Map(values: newDictionary)
     }
 }
+
+infix operator ^^ { associativity right precedence 90 }
+func ^^<T>(left: T, right: [T]) -> [T] {
+    return [left] + right
+}
+
+extension Array {
+    static func fold_left<E, A>(array: [E], acc: A, map: (A, E) -> A) -> A {
+        return array.reduce(acc, combine: map)
+    }
+}
+
+
+
+
+
+
+
+

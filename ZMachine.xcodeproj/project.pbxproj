@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6F3D72331C8A76F100C545FD /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3D72321C8A76F100C545FD /* Utility.swift */; };
 		6F6C3AEA1C77AFF10009D71C /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6C3AE31C77AFF10009D71C /* Extensions.swift */; };
 		6F6C3AEB1C77AFF10009D71C /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6C3AE41C77AFF10009D71C /* File.swift */; };
 		6F6C3AEC1C77AFF10009D71C /* ImmutableBytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6C3AE51C77AFF10009D71C /* ImmutableBytes.swift */; };
@@ -31,6 +32,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		6F3D72321C8A76F100C545FD /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utility.swift; sourceTree = "<group>"; };
 		6F6C3AD91C77AF9B0009D71C /* ZMachine */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ZMachine; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F6C3AE31C77AFF10009D71C /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		6F6C3AE41C77AFF10009D71C /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				6F6C3AE31C77AFF10009D71C /* Extensions.swift */,
 				6FC3F4F31C865E6F009E98C3 /* Dictionary.swift */,
 				6FC3F4F51C8664F1009E98C3 /* Object.swift */,
+				6F3D72321C8A76F100C545FD /* Utility.swift */,
 			);
 			path = ZMachine;
 			sourceTree = "<group>";
@@ -143,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F3D72331C8A76F100C545FD /* Utility.swift in Sources */,
 				6F6C3AF01C77AFF10009D71C /* ZString.swift in Sources */,
 				6FC3F4F41C865E6F009E98C3 /* Dictionary.swift in Sources */,
 				6F6C3AEA1C77AFF10009D71C /* Extensions.swift in Sources */,

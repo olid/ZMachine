@@ -8,5 +8,6 @@ let dict = Dictionary.display(story)
 print("Version: \(Story.version(story))")
 print("Dictionary: " + dict)
 
-let table = Object.display_object_table(story)
-print("Object table: " + table)
+let tree = Object.display_object_tree(story)
+print(tree)
+

@@ -11,6 +11,7 @@ typealias ObjectAddress = Int
 typealias PropertyHeaderAddress = Int
 
 let default_property_table_entry_size = 2
+let invalid_object = ObjectNumber(0)
 
 struct Object {
     static func default_property_table_size(story: Story) -> Int {
@@ -94,7 +95,51 @@ struct Object {
         
         return accumulate_strings_loop(to_string, start: 1, max: object_count + 1)
     }
+    
+    static func roots(story: Story) -> [ObjectNumber] {
+        func aux(obj: ObjectNumber, acc: [ObjectNumber]) -> [ObjectNumber] {
+            let current = obj
+            if current == invalid_object {
+                return acc
+            } else if parent(story, obj: current) == invalid_object {
+                return aux(obj - 1, acc: current ^^ acc)
+            } else {
+                return aux(obj - 1, acc:  acc)
+            }
+        }
+        
+        return aux(count(story), acc: [])
+    }
+    
+    static func display_object_tree(story: Story) -> String {
+        func aux(acc: String, indent: String, obj: ObjectNumber) -> String {
+            if obj == invalid_object {
+                return acc
+            } else {
+                let obj_name = name(story, n: obj)
+                let child_obj = child(story, obj: obj)
+                let sibling_obj = sibling(story, obj: obj)
+                let object_text = String(format: "%@%@\n", arguments: [indent, obj_name])
+                let with_object = acc + object_text
+                let new_indent = "|   " + indent
+                let with_children = aux(with_object, indent: new_indent, obj: child_obj)
+                return aux(with_children, indent: indent, obj: sibling_obj)
+            }
+        }
+        
+        func to_string(obj: ObjectNumber) -> String {
+            return aux("", indent: "", obj: obj)
+        }
+        
+        return accumulate_strings(to_string, items: roots(story))
+    }
 }
+
+
+
+
+
+
 
 
 

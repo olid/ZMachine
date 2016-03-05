@@ -44,18 +44,6 @@ let size14 = 14
 let size15 = 15
 let size16 = 16
 
-func accumulate_strings_loop(to_string: Int -> String, start: Int, max: Int) -> String {
-    func aux(acc: String, i: Int) -> String {
-        if i >= max {
-            return acc
-        } else {
-            return aux(acc + to_string(i), i: i + 1)
-        }
-    }
-    
-    return aux("", i: start)
-}
-
 func fetch_bits(high: BitNumber, length: BitSize, word: Int) -> Int {
     let mask = ~(0xffff << length)
     return (word >> (high - length + 1)) & mask
@@ -143,14 +131,4 @@ func write_word(story: Story, address: ByteAddress, value: Word) -> Story {
     let low = value & 0xff
     let story = write_byte(story, address: address_of_high_byte(address), value: high)
     return write_byte(story, address: address_of_low_byte(address), value: low)
-}
-
-func string_of_char(char: ZChar) -> String {
-    return String(UnicodeScalar(char))
-}
-
-func charstring_to_string(char_string: CharString) -> String {
-    return char_string.reduce("") {
-        $0 + string_of_char($1)
-    }
 }
