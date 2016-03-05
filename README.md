@@ -22,3 +22,4 @@ This is not endorsed in any way by anyone.
 * ['Round Room'](http://ericlippert.com/2016/02/24/round-room/)
 * ['Dome Room'] (http://ericlippert.com/2016/02/26/dome-room/)
 * ['Temple'] (http://ericlippert.com/2016/02/29/temple/)
+* ['Egyptian Room'] (http://ericlippert.com/2016/03/02/egyptian-room/)
