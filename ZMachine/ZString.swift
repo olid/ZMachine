@@ -28,7 +28,7 @@ let alphabet2 = StringState.Alphabet(2)
 struct ZString {
     static func abbreviations_table_base(story: Story) -> AbbreviationTableBase {
         let abbreviations_table_base_offset = WordAddress(24)
-        return AbbreviationTableBase(read_word(story, address: abbreviations_table_base_offset))
+        return AbbreviationTableBase(Story.read_word(story)(abbreviations_table_base_offset))
     }
     
     static func abbreviation_zstring(story: Story, n: AbbreviationNumber) -> ZStringAddress {
@@ -37,7 +37,7 @@ struct ZString {
         } else {
             let base = first_abbrev_addr(abbreviations_table_base(story))
             let abbr_addr = inc_word_addr_by(base, offset: n)
-            let word_addr = WordZStringAddress(read_word(story, address: abbr_addr))
+            let word_addr = WordZStringAddress(Story.read_word(story)(abbr_addr))
             return decode_word_address(word_addr)
         }
     }
@@ -66,7 +66,7 @@ struct ZString {
         
         func aux(acc: String, state1: StringState, current_address: ZStringAddress) -> String {
             let zchar_bit_size = size5
-            let word = read_word(story, address: current_address)
+            let word = Story.read_word(story)(current_address)
             let is_end = fetch_bit(bit15, word: word)
             let zchar1 = ZChar(fetch_bits(bit14, length: zchar_bit_size, word: word))
             let zchar2 = ZChar(fetch_bits(bit9, length: zchar_bit_size, word: word))
@@ -88,7 +88,7 @@ struct ZString {
     
     static func display_bytes(story: Story, addr: ZStringAddress) -> CharString {
         func aux(current: WordAddress, acc: String) -> String {
-            let word = read_word(story, address: current)
+            let word = Story.read_word(story)(current)
             let is_end = fetch_bits(bit15, length: size1, word: word)
             let zchar1 = fetch_bits(bit14, length: size5, word: word)
             let zchar2 = fetch_bits(bit9, length: size5, word: word)

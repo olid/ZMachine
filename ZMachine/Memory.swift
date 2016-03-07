@@ -105,22 +105,6 @@ func first_abbrev_addr(base: AbbreviationTableBase) -> WordAddress {
     return WordAddress(base)
 }
 
-func read_byte(story: Story, address: ByteAddress) -> Char {
-    let dynamic_size = ImmutableBytes.size(story.dynamic_memory)
-    if is_in_range(address, size: dynamic_size) {
-        return ImmutableBytes.read_byte(story.dynamic_memory, address: address)
-    } else {
-        let static_addr = dec_byte_addr_by(address, offset: dynamic_size)
-        return dereference_string(static_addr, bytes: story.static_memory)
-    }
-}
-
-func read_word(story: Story, address: ByteAddress) -> Word {
-    let high = read_byte(story, address: address_of_high_byte(address))
-    let low = read_byte(story, address: address_of_low_byte(address))
-    return Word(256 * high + low)
-}
-
 func write_byte(story: Story, address: ByteAddress, value: Char) -> Story {
     let dynamic_memory = ImmutableBytes.write_byte(story.dynamic_memory, address: address, value: value)
     return Story(dynamic: dynamic_memory, stat: story.static_memory)

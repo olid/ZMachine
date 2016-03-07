@@ -10,4 +10,3 @@ print("Dictionary: " + dict)
 
 let tree = Object.display_object_tree(story)
 print(tree)
-

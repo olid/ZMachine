@@ -31,3 +31,4 @@ func accumulate_strings<T>(to_string: T -> String, items: [T]) -> String {
     }
     return Array<T>.fold_left(items, acc: "", map: folder)
 }
+

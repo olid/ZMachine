@@ -37,39 +37,39 @@ struct Object {
     static func parent(story: Story, obj: ObjectNumber) -> ObjectNumber {
         let addr = ObjectAddress(address(story, obj: obj))
         if Story.v3_or_lower(Story.version(story)) {
-            return ObjectNumber(read_byte(story, address: ByteAddress(addr + 4)))
+            return ObjectNumber(Story.read_byte(story)(ByteAddress(addr + 4)))
         } else {
-            return ObjectNumber(read_word(story, address: WordAddress(addr + 6)))
+            return ObjectNumber(Story.read_word(story)(WordAddress(addr + 6)))
         }
     }
     
     static func sibling(story: Story, obj: ObjectNumber) -> ObjectNumber {
         let addr = ObjectAddress(address(story, obj: obj))
         if Story.v3_or_lower(Story.version(story)) {
-            return ObjectNumber(read_byte(story, address: ByteAddress(addr + 5)))
+            return ObjectNumber(Story.read_byte(story)(ByteAddress(addr + 5)))
         } else {
-            return ObjectNumber(read_word(story, address: WordAddress(addr + 8)))
+            return ObjectNumber(Story.read_word(story)(WordAddress(addr + 8)))
         }
     }
     
     static func child(story: Story, obj: ObjectNumber) -> ObjectNumber {
         let addr = ObjectAddress(address(story, obj: obj))
         if Story.v3_or_lower(Story.version(story)) {
-            return ObjectNumber(read_byte(story, address: ByteAddress(addr + 6)))
+            return ObjectNumber(Story.read_byte(story)(ByteAddress(addr + 6)))
         } else {
-            return ObjectNumber(read_word(story, address: WordAddress(addr + 10)))
+            return ObjectNumber(Story.read_word(story)(WordAddress(addr + 10)))
         }
     }
     
     static func property_header_address(story: Story, obj: ObjectAddress) -> PropertyHeaderAddress {
         let object_property_offset = Story.v3_or_lower(Story.version(story)) ? 7 : 12
         let addr = ObjectAddress(address(story, obj: obj))
-        return PropertyHeaderAddress(read_word(story, address: WordAddress(addr + object_property_offset)))
+        return PropertyHeaderAddress(Story.read_word(story)(WordAddress(addr + object_property_offset)))
     }
     
     static func name(story: Story, n: Int) -> String {
         let addr = property_header_address(story, obj: n)
-        let length = read_byte(story, address: addr)
+        let length = Story.read_byte(story)(addr)
         return length == 0 ? "<unnamed>"
             : ZString.read(story, address: ZStringAddress(addr + 1))
     }

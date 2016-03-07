@@ -16,7 +16,7 @@ struct Dictionary {
     static func word_seperators_count(story: Story) -> Int {
         let dict_base = Story.dictionary_base(story)
         let ws_base = word_seperators_base(dict_base)
-        return read_byte(story, address: ws_base)
+        return Story.read_byte(story)(ws_base)
     }
     
     static func entry_base(story: Story) -> ByteAddress {
@@ -27,12 +27,12 @@ struct Dictionary {
     }
     
     static func entry_length(story: Story) -> Int {
-        return read_byte(story, address: entry_base(story))
+        return Story.read_byte(story)(entry_base(story))
     }
     
     static func entry_count(story: Story) -> Int {
         let addr = ByteAddress(inc_byte_addr(entry_base(story)))
-        return read_word(story, address: WordAddress(addr))
+        return Story.read_word(story)(WordAddress(addr))
     }
     
     static func table_base(story: Story) -> DictionaryTableBase {

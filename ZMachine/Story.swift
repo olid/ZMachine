@@ -57,11 +57,31 @@ struct Story {
     
     static func dictionary_base(story: Story) -> DictionaryBase {
         let dictionary_base_offset = WordAddress(8)
-        return DictionaryBase(read_word(story, address: dictionary_base_offset))
+        return DictionaryBase(read_word(story)(dictionary_base_offset))
+    }
+    
+    static func read_word(story: Story) -> ByteAddress -> Word {
+        return {
+            let high = read_byte(story)(address_of_high_byte($0))
+            let low = read_byte(story)(address_of_low_byte($0))
+            return Word(256 * high + low)
+        }
+    }
+    
+    static func read_byte(story: Story) -> ByteAddress -> Char {
+        return {
+            let dynamic_size = ImmutableBytes.size(story.dynamic_memory)
+            if is_in_range($0, size: dynamic_size) {
+                return ImmutableBytes.read_byte(story.dynamic_memory, address: $0)
+            } else {
+                let static_addr = dec_byte_addr_by($0, offset: dynamic_size)
+                return dereference_string(static_addr, bytes: story.static_memory)
+            }
+        }
     }
     
     static func version(story: Story) -> Version {
-        switch read_byte(story, address: version_offset) {
+        switch read_byte(story)(version_offset) {
             case 1: return .V1
             case 2: return .V2
             case 3: return .V3
@@ -83,7 +103,7 @@ struct Story {
     
     static func object_table_base(story: Story) -> ObjectBase {
         let object_table_base_offset = WordAddress(10)
-        return ObjectBase(read_word(story, address: object_table_base_offset))
+        return ObjectBase(read_word(story)(object_table_base_offset))
     }
 }
 
