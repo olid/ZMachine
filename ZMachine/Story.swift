@@ -61,20 +61,20 @@ struct Story {
     }
     
     static func read_word(story: Story) -> ByteAddress -> Word {
-        return {
-            let high = read_byte(story)(address_of_high_byte($0))
-            let low = read_byte(story)(address_of_low_byte($0))
+        return { address in
+            let high = read_byte(story)(address_of_high_byte(address))
+            let low = read_byte(story)(address_of_low_byte(address))
             return Word(256 * high + low)
         }
     }
     
     static func read_byte(story: Story) -> ByteAddress -> Char {
-        return {
+        return { address in
             let dynamic_size = ImmutableBytes.size(story.dynamic_memory)
-            if is_in_range($0, size: dynamic_size) {
-                return ImmutableBytes.read_byte(story.dynamic_memory, address: $0)
+            if is_in_range(address, size: dynamic_size) {
+                return ImmutableBytes.read_byte(story.dynamic_memory, address: address)
             } else {
-                let static_addr = dec_byte_addr_by($0, offset: dynamic_size)
+                let static_addr = dec_byte_addr_by(address, offset: dynamic_size)
                 return dereference_string(static_addr, bytes: story.static_memory)
             }
         }
