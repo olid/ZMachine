@@ -31,18 +31,18 @@ struct ZString {
         return AbbreviationTableBase(Story.read_word(story)(abbreviations_table_base_offset))
     }
     
-    static func abbreviation_zstring(story: Story, n: AbbreviationNumber) -> ZStringAddress {
+    static func abbreviation_zstring(story: Story)(_ n: AbbreviationNumber) -> ZStringAddress {
         if n < 0 || n >= abbreviation_table_length {
             fatalError("Bad offset into abbreviation table (\(n))")
         } else {
             let base = first_abbrev_addr(abbreviations_table_base(story))
-            let abbr_addr = inc_word_addr_by(base, offset: n)
+            let abbr_addr = inc_word_addr_by(base)(n)
             let word_addr = WordZStringAddress(Story.read_word(story)(abbr_addr))
             return decode_word_address(word_addr)
         }
     }
     
-    static func read(story: Story, address: ZStringAddress) -> String {
+    static func read(story: Story)(_ address: ZStringAddress) -> String {
         func process_zchar(zchar: ZChar, state: StringState) -> (String, StringState) {
             switch (zchar, state) {
                 case (1, .Alphabet): return ("", abbrev0)
@@ -54,8 +54,8 @@ struct ZString {
                 case (_, .Alphabet(let a)): return (alphabet_table[a][zchar], alphabet0)
                 case (_, .Abbrev(let a)):
                     let abbrv = AbbreviationNumber(a + zchar)
-                    let addr = abbreviation_zstring(story, n: abbrv)
-                    let str = read(story, address: addr)
+                    let addr = abbreviation_zstring(story)(abbrv)
+                    let str = read(story)(addr)
                     return (str, alphabet0)
                 case (_, .Leading): return ("", (.Trailing(zchar)))
                 case (_, .Trailing(let high)):
@@ -64,13 +64,13 @@ struct ZString {
             }
         }
         
-        func aux(acc: String, state1: StringState, current_address: ZStringAddress) -> String {
+        func aux(acc: String)(_ state1: StringState)(_ current_address: ZStringAddress) -> String {
             let zchar_bit_size = size5
             let word = Story.read_word(story)(current_address)
-            let is_end = fetch_bit(bit15, word: word)
-            let zchar1 = ZChar(fetch_bits(bit14, length: zchar_bit_size, word: word))
-            let zchar2 = ZChar(fetch_bits(bit9, length: zchar_bit_size, word: word))
-            let zchar3 = ZChar(fetch_bits(bit4, length: zchar_bit_size, word: word))
+            let is_end = fetch_bit(bit15)(word)
+            let zchar1 = ZChar(fetch_bits(bit14)(zchar_bit_size)(word))
+            let zchar2 = ZChar(fetch_bits(bit9)(zchar_bit_size)(word))
+            let zchar3 = ZChar(fetch_bits(bit4)(zchar_bit_size)(word))
             let (text1, state2) = process_zchar(zchar1, state: state1)
             let (text2, state3) = process_zchar(zchar2, state: state2)
             let (text3, state_next) = process_zchar(zchar3, state: state3)
@@ -79,28 +79,28 @@ struct ZString {
             if is_end {
                 return new_acc
             } else {
-                return aux(new_acc, state1: state_next, current_address: (inc_word_addr(current_address)))
+                return aux(new_acc)(state_next)((inc_word_addr(current_address)))
             }
         }
         
-        return aux("", state1: alphabet0, current_address: WordAddress(address))
+        return aux("")(alphabet0)(WordAddress(address))
     }
     
-    static func display_bytes(story: Story, addr: ZStringAddress) -> CharString {
-        func aux(current: WordAddress, acc: String) -> String {
+    static func display_bytes(story: Story)(_ addr: ZStringAddress) -> CharString {
+        func aux(current: WordAddress)(_ acc: String) -> String {
             let word = Story.read_word(story)(current)
-            let is_end = fetch_bits(bit15, length: size1, word: word)
-            let zchar1 = fetch_bits(bit14, length: size5, word: word)
-            let zchar2 = fetch_bits(bit9, length: size5, word: word)
-            let zchar3 = fetch_bits(bit4, length: size5, word: word)
+            let is_end = fetch_bits(bit15)(size1)(word)
+            let zchar1 = fetch_bits(bit14)(size5)(word)
+            let zchar2 = fetch_bits(bit9)(size5)(word)
+            let zchar3 = fetch_bits(bit4)(size5)(word)
             let s = acc + alphabet_table[0][zchar1] + alphabet_table[0][zchar2] + alphabet_table[0][zchar3]
             if is_end == 1 {
                 return s
             }
             
-            return aux(inc_word_addr(current), acc: s)
+            return aux(inc_word_addr(current))(s)
         }
-        return aux(WordAddress(addr), acc: "").charString
+        return aux(WordAddress(addr))("").charString
     }
 }
 

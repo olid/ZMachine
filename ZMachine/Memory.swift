@@ -44,24 +44,24 @@ let size14 = 14
 let size15 = 15
 let size16 = 16
 
-func fetch_bits(high: BitNumber, length: BitSize, word: Int) -> Int {
+func fetch_bits(high: BitNumber)(_ length: BitSize)(_ word: Int) -> Int {
     let mask = ~(0xffff << length)
     return (word >> (high - length + 1)) & mask
 }
 
-func fetch_bit(high: BitNumber, word: Int) -> Bool {
-    return fetch_bits(high, length: 1, word: word) == 1
+func fetch_bit(high: BitNumber)(_ word: Int) -> Bool {
+    return fetch_bits(high)(1)(word) == 1
 }
 
-func is_in_range(address: ByteAddress, size: Int) -> Bool {
+func is_in_range(address: ByteAddress)(_ size: Int) -> Bool {
     return 0 <= address && address < size
 }
 
-func is_out_of_range(address: ByteAddress, size: Int) -> Bool {
-    return not { is_in_range(address, size: size) }
+func is_out_of_range(address: ByteAddress)(_ size: Int) -> Bool {
+    return not { is_in_range(address)(size) }
 }
 
-func inc_byte_addr_by(address: ByteAddress, offset: Int) -> ByteAddress {
+func inc_byte_addr_by(address: ByteAddress)(_ offset: Int) -> ByteAddress {
     return ByteAddress(address + offset)
 }
 
@@ -69,12 +69,12 @@ func inc_byte_addr(address: ByteAddress) -> ByteAddress {
     return ByteAddress(address + 1)
 }
 
-func dec_byte_addr_by(address: ByteAddress, offset: Int) -> ByteAddress {
-    return inc_byte_addr_by(address, offset: 0 - offset)
+func dec_byte_addr_by(address: ByteAddress)(_ offset: Int) -> ByteAddress {
+    return inc_byte_addr_by(address)(0 - offset)
 }
 
-func dereference_string(address: ByteAddress, bytes: CharString) -> Char {
-    if is_out_of_range(address, size: CharString.length(bytes)) {
+func dereference_string(address: ByteAddress)(_ bytes: CharString) -> Char {
+    if is_out_of_range(address)(CharString.length(bytes)) {
         fatalError("Address out of range")
     } else {
         return bytes[address]
@@ -93,26 +93,26 @@ func decode_word_address(word_address: WordZStringAddress) -> ZStringAddress {
     return ZStringAddress(word_address * 2)
 }
 
-func inc_word_addr_by(address: WordAddress, offset: Int) -> WordAddress {
+func inc_word_addr_by(address: WordAddress)(_ offset: Int) -> WordAddress {
     return WordAddress(address + offset * word_size)
 }
 
 func inc_word_addr(address: WordAddress) -> WordAddress {
-    return inc_word_addr_by(address, offset: 1)
+    return inc_word_addr_by(address)(1)
 }
 
 func first_abbrev_addr(base: AbbreviationTableBase) -> WordAddress {
     return WordAddress(base)
 }
 
-func write_byte(story: Story, address: ByteAddress, value: Char) -> Story {
-    let dynamic_memory = ImmutableBytes.write_byte(story.dynamic_memory, address: address, value: value)
+func write_byte(story: Story)(_ address: ByteAddress)(_ value: Char) -> Story {
+    let dynamic_memory = ImmutableBytes.write_byte(story.dynamic_memory)(address)(value)
     return Story(dynamic: dynamic_memory, stat: story.static_memory)
 }
 
-func write_word(story: Story, address: ByteAddress, value: Word) -> Story {
+func write_word(story: Story)(_ address: ByteAddress)(_ value: Word) -> Story {
     let high = (value >> 8) & 0xff
     let low = value & 0xff
-    let story = write_byte(story, address: address_of_high_byte(address), value: high)
-    return write_byte(story, address: address_of_low_byte(address), value: low)
+    let story = write_byte(story)(address_of_high_byte(address))(high)
+    return write_byte(story)(address_of_low_byte(address))(low)
 }

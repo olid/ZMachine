@@ -42,8 +42,8 @@ struct Story {
         if len < header_size {
             fatalError("\(filename) is not a valid story file (its way too short!)")
         } else {
-            let high = dereference_string(address_of_high_byte(static_memory_base_offset), bytes: file)
-            let low = dereference_string(address_of_low_byte(static_memory_base_offset), bytes: file)
+            let high = dereference_string(address_of_high_byte(static_memory_base_offset))(file)
+            let low = dereference_string(address_of_low_byte(static_memory_base_offset))(file)
             let dynamic_length = high * 256 + low
             if dynamic_length > len {
                 fatalError("\(filename) is not a valid story file (its too short!)")
@@ -60,23 +60,19 @@ struct Story {
         return DictionaryBase(read_word(story)(dictionary_base_offset))
     }
     
-    static func read_word(story: Story) -> ByteAddress -> Word {
-        return { address in
-            let high = read_byte(story)(address_of_high_byte(address))
-            let low = read_byte(story)(address_of_low_byte(address))
-            return Word(256 * high + low)
-        }
+    static func read_word(story: Story)(_ address: ByteAddress) -> Word {
+        let high = read_byte(story)(address_of_high_byte(address))
+        let low = read_byte(story)(address_of_low_byte(address))
+        return Word(256 * high + low)
     }
     
-    static func read_byte(story: Story) -> ByteAddress -> Char {
-        return { address in
-            let dynamic_size = ImmutableBytes.size(story.dynamic_memory)
-            if is_in_range(address, size: dynamic_size) {
-                return ImmutableBytes.read_byte(story.dynamic_memory, address: address)
-            } else {
-                let static_addr = dec_byte_addr_by(address, offset: dynamic_size)
-                return dereference_string(static_addr, bytes: story.static_memory)
-            }
+    static func read_byte(story: Story)(_ address: ByteAddress) -> Char {
+        let dynamic_size = ImmutableBytes.size(story.dynamic_memory)
+        if is_in_range(address)(dynamic_size) {
+            return ImmutableBytes.read_byte(story.dynamic_memory)(address)
+        } else {
+            let static_addr = dec_byte_addr_by(address)(dynamic_size)
+            return dereference_string(static_addr)(story.static_memory)
         }
     }
     
