@@ -102,6 +102,18 @@ struct ZString {
         }
         return aux(WordAddress(addr))("").charString
     }
+    
+    static func length(story: Story)(address: ZStringAddress) -> Int {
+        func aux(len: Int, current: ZStringAddress) -> Int {
+            if fetch_bit(bit15)(Story.read_word(story)(current)) {
+                return len + 2
+            } else {
+                return aux(len + 2, current: inc_word_addr(current))
+            }
+        }
+        
+        return aux(0, current: address)
+    }
 }
 
 
