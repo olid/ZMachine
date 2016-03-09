@@ -25,3 +25,4 @@ This is not endorsed in any way by anyone.
 * ['Egyptian Room'] (http://ericlippert.com/2016/03/02/egyptian-room/)
 * ['Altar'] (http://ericlippert.com/2016/03/04/altar/)
 * ['Forest Edge'] (http://ericlippert.com/2016/03/07/forest-edge/)
+* ['Canyon View'] (http://ericlippert.com/2016/03/09/canyon-view/)
