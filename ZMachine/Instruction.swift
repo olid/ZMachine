@@ -118,7 +118,7 @@ struct Instruction {
                     let type_bits = fetch_bits(BitNumber(i * 2 + 1))(size2)(type_byte)
                     switch decode_types(type_bits) {
                         case .Omitted: return aux(i + 1, acc: acc)
-                        case let x: return aux(i + 1, acc: x ++ acc)
+                        case let x: return aux(i + 1, acc: x |< acc)
                     }
                 }
             }
@@ -144,7 +144,7 @@ struct Instruction {
                     let opcode_length = get_opcode_length(form)
                     let type_byte_0 = read_byte(inc_byte_addr_by(address)(opcode_length))
                     let type_byte_1 = read_byte(inc_byte_addr_by(address)(opcode_length + 1))
-                    return decode_variable_types(type_byte_0) ++ decode_variable_types(type_byte_1)
+                    return decode_variable_types(type_byte_0) >< decode_variable_types(type_byte_1)
                 case _:
                     let opcode_length = get_opcode_length(form)
                     let type_byte = read_byte(inc_byte_addr_by(address)(opcode_length))

@@ -102,7 +102,7 @@ struct Object {
             if current == invalid_object {
                 return acc
             } else if parent(story)(current) == invalid_object {
-                return aux(obj - 1, acc: current ++ acc)
+                return aux(obj - 1, acc: current |< acc)
             } else {
                 return aux(obj - 1, acc:  acc)
             }

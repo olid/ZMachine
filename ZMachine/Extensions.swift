@@ -70,15 +70,20 @@ struct Map<K: Hashable, V: Hashable> {
     }
 }
 
-infix operator ++ { associativity right precedence 90 }
-func ++<T>(left: T, right: [T]) -> [T] {
+infix operator |< { associativity right precedence 90 }
+func |<<T>(left: T, right: [T]) -> [T] {
     return [left] + right
 }
 
-func ++<T>(left: [T], right: [T]) -> [T] {
+infix operator >< { associativity right precedence 90 }
+func ><<T>(left: [T], right: [T]) -> [T] {
     return left + right
 }
 
+infix operator >| { associativity right precedence 90 }
+func >|<T>(left: [T], right: T) -> [T] {
+    return left + [right]
+}
 
 
 
