@@ -109,6 +109,57 @@ struct Instruction {
                 default: return .Omitted
             }
         }
+        
+        func decode_variable_types(type_byte: Word) -> [OperandType] {
+            func aux(i: Int, acc: [OperandType]) -> [OperandType] {
+                if i > 3 {
+                    return acc
+                } else {
+                    let type_bits = fetch_bits(BitNumber(i * 2 + 1))(size2)(type_byte)
+                    switch decode_types(type_bits) {
+                        case .Omitted: return aux(i + 1, acc: acc)
+                        case let x: return aux(i + 1, acc: x ++ acc)
+                    }
+                }
+            }
+            return aux(0, acc: [])
+        }
+        
+        func decode_operand_types(address: InstructionAddress)(_ form: OpcodeForm)(_ op_count: OperandCount)(_ opcode: ByteCode) -> [OperandType] {
+            switch(form, op_count, opcode) {
+                case (_, .OP0, _): return []
+                case (_, .OP1, _):
+                    let b = read_byte(address)
+                    return [decode_types(fetch_bits(bit5)(size2)(b))]
+                case (.LongForm, _, _):
+                    let b = read_byte(address)
+                    switch(fetch_bits(bit6)(size2)(b)) {
+                        case 0: return [.SmallOperand, .SmallOperand]
+                        case 1: return [.SmallOperand, .VariableOperand]
+                        case 2: return [.VariableOperand, .SmallOperand]
+                        case _: return [.VariableOperand, .VariableOperand]
+                    }
+                case (.VariableForm, _, .VAR_236),
+                     (.VariableForm, _, .VAR_250):
+                    let opcode_length = get_opcode_length(form)
+                    let type_byte_0 = read_byte(inc_byte_addr_by(address)(opcode_length))
+                    let type_byte_1 = read_byte(inc_byte_addr_by(address)(opcode_length + 1))
+                    return decode_variable_types(type_byte_0) ++ decode_variable_types(type_byte_1)
+                case _:
+                    let opcode_length = get_opcode_length(form)
+                    let type_byte = read_byte(inc_byte_addr_by(address)(opcode_length))
+                    return decode_variable_types(type_byte)
+            }
+        }
+        
+        func get_type_length(form: OpcodeForm)(_ opcode: ByteCode) -> Int {
+            switch (form, opcode) {
+                case (.VariableForm, .VAR_236),
+                     (.VariableForm, .VAR_250): return 2
+                case (.VariableForm, _): return 1
+                default: return 0
+            }
+        }
     }
 }
 
