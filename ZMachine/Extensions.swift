@@ -39,7 +39,7 @@ extension Array {
     
     var headtail: (Element?, [Element]) {
         return self.count > 1
-            ? (self.first, [Element](self[1..<(1 + self.count - 1)]))
+            ? (self.first, [Element](self.dropFirst()))
             : (self.first, [])
     }
 }
