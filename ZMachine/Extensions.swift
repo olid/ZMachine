@@ -37,10 +37,18 @@ extension Array {
         return array.reduce(acc, combine: map)
     }
     
-    var headtail: (Element?, [Element]) {
+    var head: Element? {
+        return self.first
+    }
+    
+    var tail: [Element] {
         return self.count > 1
-            ? (self.first, [Element](self.dropFirst()))
-            : (self.first, [])
+            ? [Element](self.dropFirst())
+            : []
+    }
+    
+    var headtail: (Element?, [Element]) {
+        return (self.head, self.tail)
     }
 }
 
