@@ -185,6 +185,7 @@ struct Instruction {
         
         func decode_operands(operand_address: InstructionAddress)(_ operand_types: [OperandType]) -> [Operand] {
             switch operand_types.headtail {
+                case (.None, _): return []
                 case (let head, let remaining_types) where head == .LargeOperand:
                     let w = read_word(operand_address)
                     let tail = decode_operands(inc_byte_addr_by(operand_address)(word_size))(remaining_types)
@@ -200,16 +201,16 @@ struct Instruction {
                     return .Variable(v) |< tail
                 case (let head, _) where head == .Omitted:
                     fatalError("Ommitted operand type passed to decode_operands")
-                default: return []
+                default:
+                    fatalError("Something broke (types = \(operand_types.headtail))")
             }
         }
         
         func get_operand_length(operand_types: [OperandType]) -> Int {
             switch operand_types.headtail {
+                case (.None, _): return 0
                 case (let head, let remaining_types) where head == .LargeOperand: return word_size + get_operand_length(remaining_types)
-                case (let head, let remaining_types) where head == .SmallOperand: return 1 + get_operand_length(remaining_types)
-                case (let head, let remaining_types) where head == .VariableOperand: return 1 + get_operand_length(remaining_types)
-                default: return 0
+                case (_, let remaining_types): return 1 + get_operand_length(remaining_types)
             }
         }
     }
