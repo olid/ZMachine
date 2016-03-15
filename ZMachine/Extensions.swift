@@ -36,6 +36,12 @@ extension Array {
     static func fold_left<E, A>(array: [E], acc: A, map: (A, E) -> A) -> A {
         return array.reduce(acc, combine: map)
     }
+    
+    var headtail: (Element?, [Element]) {
+        return self.count > 1
+            ? (self.first, [Element](self[1..<(1 + self.count - 1)]))
+            : (self.first, [])
+    }
 }
 
 func not(fn: () -> Bool) -> Bool {

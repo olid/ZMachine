@@ -24,7 +24,22 @@ enum OperandType {
     case Omitted
 }
 
+typealias LocalVariable = Int
+typealias GlobalVariable = Int
 typealias InstructionAddress = Int
+
+enum VariableLocation {
+    case Stack
+    case Local(LocalVariable)
+    case Global(GlobalVariable)
+}
+
+enum Operand {
+    case Large(Int)
+    case Small(Int)
+    case Variable(VariableLocation)
+}
+
 
 let one_operand_bytecodes: [ByteCode] = [
     .OP1_128, .OP1_129, .OP1_130, .OP1_131, .OP1_132, .OP1_133, .OP1_134, .OP1_135,
@@ -157,6 +172,43 @@ struct Instruction {
                 case (.VariableForm, .VAR_236),
                      (.VariableForm, .VAR_250): return 2
                 case (.VariableForm, _): return 1
+                default: return 0
+            }
+        }
+        
+        func decode_variable(n: Int) -> VariableLocation {
+            let maxinum_local = 15
+            return n == 0 ? .Stack
+                : n <= maxinum_local ? .Local(n)
+                : .Global(n)
+        }
+        
+        func decode_operands(operand_address: InstructionAddress)(_ operand_types: [OperandType]) -> [Operand] {
+            switch operand_types.headtail {
+                case (let head, let remaining_types) where head == .LargeOperand:
+                    let w = read_word(operand_address)
+                    let tail = decode_operands(inc_byte_addr_by(operand_address)(word_size))(remaining_types)
+                    return .Large(w) |< tail
+                case (let head, let remaining_types) where head == .SmallOperand:
+                    let b = read_byte(operand_address)
+                    let tail = decode_operands(inc_byte_addr(operand_address))(remaining_types)
+                    return .Small(b) |< tail
+                case (let head, let remaining_types) where head == .VariableOperand:
+                    let b = read_byte(operand_address)
+                    let v = decode_variable(b)
+                    let tail = decode_operands(inc_byte_addr(operand_address))(remaining_types)
+                    return .Variable(v) |< tail
+                case (let head, _) where head == .Omitted:
+                    fatalError("Ommitted operand type passed to decode_operands")
+                default: return []
+            }
+        }
+        
+        func get_operand_length(operand_types: [OperandType]) -> Int {
+            switch operand_types.headtail {
+                case (let head, let remaining_types) where head == .LargeOperand: return word_size + get_operand_length(remaining_types)
+                case (let head, let remaining_types) where head == .SmallOperand: return 1 + get_operand_length(remaining_types)
+                case (let head, let remaining_types) where head == .VariableOperand: return 1 + get_operand_length(remaining_types)
                 default: return 0
             }
         }
