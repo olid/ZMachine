@@ -177,10 +177,12 @@ struct Instruction {
         }
         
         func decode_variable(n: Int) -> VariableLocation {
-            let maxinum_local = 15
-            return n == 0 ? .Stack
-                : n <= maxinum_local ? .Local(n)
-                : .Global(n)
+            let maximum_local = 15
+            switch n {
+                case 0: return .Stack
+                case 1...maximum_local: return .Local(n)
+                default: return .Global(n)
+            }
         }
         
         func decode_operands(operand_address: InstructionAddress)(_ operand_types: [OperandType]) -> [Operand] {
