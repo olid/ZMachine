@@ -28,3 +28,4 @@ This is not endorsed in any way by anyone.
 * ['Canyon View'] (http://ericlippert.com/2016/03/09/canyon-view/)
 * ['End of Rainbow'] (http://ericlippert.com/2016/03/11/end-of-rainbow/)
 * ['Aragain Falls'] (http://ericlippert.com/2016/03/14/aragain-falls/)
+* ['Sandy Cave'] (http://ericlippert.com/2016/03/16/sandy-cave/)
