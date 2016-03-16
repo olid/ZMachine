@@ -213,6 +213,37 @@ struct Instruction {
                 case (_, let remaining_types): return 1 + get_operand_length(remaining_types)
             }
         }
+        
+        func has_store(opcode: ByteCode)(_ ver: Version) -> Bool {
+            switch opcode {
+                case .OP1_143: return Story.v4_or_lower(ver)
+                case .OP0_181: return Story.v4_or_higher(ver)
+                case .OP0_182: return Story.v4_or_higher(ver)
+                case .OP0_185: return Story.v4_or_higher(ver)
+                case .VAR_233: return ver == .V6
+                case .VAR_228: return Story.v5_or_higher(ver)
+                case .OP2_8, .OP2_9, .OP2_15, .OP2_16, .OP2_17, .OP2_18  , .OP2_19,
+                    .OP2_20, .OP2_21, .OP2_22 , .OP2_23, .OP2_24, .OP2_25,
+                    .OP1_129, .OP1_130, .OP1_131, .OP1_132, .OP1_136, .OP1_142,
+                    .VAR_224, .VAR_231, .VAR_236, .VAR_246, .VAR_247, .VAR_248,
+                    .EXT_0, .EXT_1, .EXT_2, .EXT_3, .EXT_4, .EXT_9,
+                    .EXT_10, .EXT_19, .EXT_29: return true
+                default: return false
+            }
+        }
+        
+        func decode_store(store_address: ByteAddress)(_ opcode: ByteCode)(_ ver: Version) -> VariableLocation? {
+            if has_store(opcode)(ver) {
+                let store_byte = read_byte(store_address)
+                return .Some(decode_variable(store_byte))
+            } else {
+                return .None
+            }
+        }
+        
+        func get_store_length(opcode: ByteCode)(_ ver: Version) -> Int {
+            return has_store(opcode)(ver) ? 1 : 0
+        }
     }
 }
 

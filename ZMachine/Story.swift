@@ -97,6 +97,27 @@ struct Story {
         }
     }
     
+    static func v4_or_lower(v: Version) -> Bool {
+        switch v {
+            case .V1, .V2, .V3, .V4: return true
+            case .V5, .V6, .V7, .V8: return false
+        }
+    }
+    
+    static func v4_or_higher(v: Version) -> Bool {
+        switch v {
+            case .V1, .V2, .V3: return false
+            case .V4, .V5, .V6, .V7, .V8: return true
+        }
+    }
+    
+    static func v5_or_higher(v: Version) -> Bool {
+        switch v {
+        case .V1, .V2, .V3, .V4: return false
+        case .V5, .V6, .V7, .V8: return true
+        }
+    }
+    
     static func object_table_base(story: Story) -> ObjectBase {
         let object_table_base_offset = WordAddress(10)
         return ObjectBase(read_word(story)(object_table_base_offset))
