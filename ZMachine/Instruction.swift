@@ -40,6 +40,12 @@ enum Operand {
     case Variable(VariableLocation)
 }
 
+enum BranchAddress {
+    case ReturnTrue
+    case ReturnFalse
+    case BranchAddress(InstructionAddress)
+}
+
 
 let one_operand_bytecodes: [ByteCode] = [
     .OP1_128, .OP1_129, .OP1_130, .OP1_131, .OP1_132, .OP1_133, .OP1_134, .OP1_135,
@@ -245,6 +251,56 @@ struct Instruction {
         
         func get_store_length(opcode: ByteCode)(_ ver: Version) -> Int {
             return has_store(opcode)(ver) ? 1 : 0
+        }
+        
+        func has_branch(opcode: ByteCode)(_ ver: Version) -> Bool {
+            switch opcode {
+                case .OP0_181: return Story.v3_or_lower(ver)
+                case .OP0_182: return Story.v3_or_lower(ver)
+                case .OP2_1, .OP2_2, .OP2_3, .OP2_4, .OP2_5, .OP2_6, .OP2_7, .OP2_10,
+                    .OP1_128, .OP1_129, .OP1_130, .OP0_189, .OP0_191,
+                    .VAR_247, .VAR_255,
+                    .EXT_6, .EXT_14, .EXT_24, .EXT_27: return true
+                default: return false
+            }
+        }
+        
+        func decode_branch(branch_code_address: InstructionAddress)(_ opcode: ByteCode)(_ ver: Version) -> (Bool, BranchAddress)? {
+            if has_branch(opcode)(ver) {
+                let high = read_byte(branch_code_address)
+                let sense = fetch_bit(bit7)(high)
+                let bottom6 = fetch_bits(bit5)(size6)(high)
+                let offset = when { fetch_bit(bit6)(high) }.then {
+                    bottom6
+                }.otherwise {
+                    let low = read_byte(inc_byte_addr(branch_code_address))
+                    let unsigned = 256 * bottom6 + low
+                    return unsigned < 8192 ? unsigned : unsigned - 16384
+                }
+                let branch: (Bool, BranchAddress) = {
+                    switch offset {
+                        case 0: return (sense, BranchAddress.ReturnTrue)
+                        case 1: return (sense, BranchAddress.ReturnFalse)
+                        default:
+                            let branch_length = fetch_bit(bit6)(high) ? 1 : 2
+                            let address_after = inc_byte_addr_by(branch_length)(branch_length)
+                            let branch_target = InstructionAddress(address_after + offset - 2)
+                            return (sense, BranchAddress.BranchAddress(branch_target))
+                    }
+                }()
+                return .Some(branch)
+            } else {
+                return .None
+            }
+        }
+        
+        func get_branch_length(branch_code_address: InstructionAddress)(_ opcode: ByteCode)(_ ver: Version) -> Int {
+            if has_branch(opcode)(ver) {
+                let b = read_byte(branch_code_address)
+                return fetch_bit(bit6)(b) ? 1 : 2
+            } else {
+                return 0
+            }
         }
     }
 }

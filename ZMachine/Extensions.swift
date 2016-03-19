@@ -16,6 +16,28 @@ extension Int {
     }
 }
 
+class when<T> {
+    let itIs: () -> Bool
+    var thenFn: (() -> T)!
+    
+    init(_ itIs: () -> Bool) {
+        self.itIs = itIs
+    }
+    
+    func then(fn: () -> T) -> when {
+        thenFn = fn
+        return self
+    }
+    
+    func otherwise(elseFn: () -> T) -> T {
+        if itIs() {
+            return thenFn()
+        } else {
+            return elseFn()
+        }
+    }
+}
+
 extension String {
     var charString: CharString {
         return self.utf8.map {
