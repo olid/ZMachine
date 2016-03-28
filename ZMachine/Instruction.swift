@@ -77,41 +77,41 @@ struct Instruction {
     func decode(story: Story, address: InstructionAddress) -> () {
         let addr = ByteAddress(address)
         let ver = Story.version(story)
-        let read_word = Story.read_word(story)
-        let read_byte = Story.read_byte(story)
-        let read_zstring = ZString.read(story)
-        let zstring_length = ZString.length(story)
+        let read_word = { Story.read_word(story, $0) }
+        let read_byte = { Story.read_byte(story, $0) }
+        let read_zstring = { ZString.read(story, $0) }
+        let zstring_length = { ZString.length(story, $0) }
         
         func decode_form(address: InstructionAddress) -> OpcodeForm {
             let byte = read_byte(address)
-            switch fetch_bits(bit7)(size2)(byte) {
+            switch fetch_bits(bit7, size2, byte) {
                 case 3: return .VariableForm
                 case 2: return byte == 190 ? .ExtendedForm : .ShortForm
                 default: return .LongForm
             }
         }
         
-        func decode_op_count(address: InstructionAddress)(form: OpcodeForm) -> OperandCount {
+        func decode_op_count(address: InstructionAddress, form: OpcodeForm) -> OperandCount {
             let byte = read_byte(address)
             switch form {
-                case .ShortForm: return fetch_bits(bit5)(size2)(byte) == 3 ? .OP0 : .OP1
+                case .ShortForm: return fetch_bits(bit5, size2, byte) == 3 ? .OP0 : .OP1
                 case .LongForm: return .OP2
-                case .VariableForm: return fetch_bit(bit5)(byte) ? .VAR : .OP2
+                case .VariableForm: return fetch_bit(bit5, byte) ? .VAR : .OP2
                 case .ExtendedForm: return .VAR
             }
         }
         
-        func decode_opcode(address: InstructionAddress)(form: OpcodeForm)(op_count: OperandCount) -> ByteCode {
+        func decode_opcode(address: InstructionAddress, form: OpcodeForm, op_count: OperandCount) -> ByteCode {
             let byte = read_byte(address)
             switch (form, op_count) {
                 case (.ExtendedForm, _):
                     let maximum_extended = 29
                     let ext = read_byte(inc_byte_addr(address))
                     return ext > maximum_extended ? .ILLEGAL : ext_bytecodes[ext]
-                case (_, .OP0): return zero_operand_bytecodes[fetch_bits(bit3)(size4)(byte)]
-                case (_, .OP1): return one_operand_bytecodes[fetch_bits(bit3)(size4)(byte)]
-                case (_, .OP2): return two_operand_bytecodes[fetch_bits(bit4)(size5)(byte)]
-                case (_, .VAR): return var_operand_bytecodes[fetch_bits(bit4)(size5)(byte)]
+                case (_, .OP0): return zero_operand_bytecodes[fetch_bits(bit3, size4, byte)]
+                case (_, .OP1): return one_operand_bytecodes[fetch_bits(bit3, size4, byte)]
+                case (_, .OP2): return two_operand_bytecodes[fetch_bits(bit4, size5, byte)]
+                case (_, .VAR): return var_operand_bytecodes[fetch_bits(bit4, size5, byte)]
             }
         }
         
@@ -136,7 +136,7 @@ struct Instruction {
                 if i > 3 {
                     return acc
                 } else {
-                    let type_bits = fetch_bits(BitNumber(i * 2 + 1))(size2)(type_byte)
+                    let type_bits = fetch_bits(BitNumber(i * 2 + 1), size2, type_byte)
                     switch decode_types(type_bits) {
                         case .Omitted: return aux(i + 1, acc: acc)
                         case let x: return aux(i + 1, acc: x |< acc)
@@ -146,15 +146,15 @@ struct Instruction {
             return aux(0, acc: [])
         }
         
-        func decode_operand_types(address: InstructionAddress)(_ form: OpcodeForm)(_ op_count: OperandCount)(_ opcode: ByteCode) -> [OperandType] {
+        func decode_operand_types(address: InstructionAddress, _ form: OpcodeForm, _ op_count: OperandCount, _ opcode: ByteCode) -> [OperandType] {
             switch(form, op_count, opcode) {
                 case (_, .OP0, _): return []
                 case (_, .OP1, _):
                     let b = read_byte(address)
-                    return [decode_types(fetch_bits(bit5)(size2)(b))]
+                    return [decode_types(fetch_bits(bit5, size2, b))]
                 case (.LongForm, _, _):
                     let b = read_byte(address)
-                    switch(fetch_bits(bit6)(size2)(b)) {
+                    switch(fetch_bits(bit6, size2, b)) {
                         case 0: return [.SmallOperand, .SmallOperand]
                         case 1: return [.SmallOperand, .VariableOperand]
                         case 2: return [.VariableOperand, .SmallOperand]
@@ -163,17 +163,17 @@ struct Instruction {
                 case (.VariableForm, _, .VAR_236),
                      (.VariableForm, _, .VAR_250):
                     let opcode_length = get_opcode_length(form)
-                    let type_byte_0 = read_byte(inc_byte_addr_by(address)(opcode_length))
-                    let type_byte_1 = read_byte(inc_byte_addr_by(address)(opcode_length + 1))
+                    let type_byte_0 = read_byte(inc_byte_addr_by(address, opcode_length))
+                    let type_byte_1 = read_byte(inc_byte_addr_by(address, opcode_length + 1))
                     return decode_variable_types(type_byte_0) >< decode_variable_types(type_byte_1)
                 case _:
                     let opcode_length = get_opcode_length(form)
-                    let type_byte = read_byte(inc_byte_addr_by(address)(opcode_length))
+                    let type_byte = read_byte(inc_byte_addr_by(address, opcode_length))
                     return decode_variable_types(type_byte)
             }
         }
         
-        func get_type_length(form: OpcodeForm)(_ opcode: ByteCode) -> Int {
+        func get_type_length(form: OpcodeForm, _ opcode: ByteCode) -> Int {
             switch (form, opcode) {
                 case (.VariableForm, .VAR_236),
                      (.VariableForm, .VAR_250): return 2
@@ -191,21 +191,21 @@ struct Instruction {
             }
         }
         
-        func decode_operands(operand_address: InstructionAddress)(_ operand_types: [OperandType]) -> [Operand] {
+        func decode_operands(operand_address: InstructionAddress, _ operand_types: [OperandType]) -> [Operand] {
             switch operand_types.headtail {
                 case (.None, _): return []
                 case (let head, let remaining_types) where head == .LargeOperand:
                     let w = read_word(operand_address)
-                    let tail = decode_operands(inc_byte_addr_by(operand_address)(word_size))(remaining_types)
+                    let tail = decode_operands(inc_byte_addr_by(operand_address, word_size), remaining_types)
                     return .Large(w) |< tail
                 case (let head, let remaining_types) where head == .SmallOperand:
                     let b = read_byte(operand_address)
-                    let tail = decode_operands(inc_byte_addr(operand_address))(remaining_types)
+                    let tail = decode_operands(inc_byte_addr(operand_address), remaining_types)
                     return .Small(b) |< tail
                 case (let head, let remaining_types) where head == .VariableOperand:
                     let b = read_byte(operand_address)
                     let v = decode_variable(b)
-                    let tail = decode_operands(inc_byte_addr(operand_address))(remaining_types)
+                    let tail = decode_operands(inc_byte_addr(operand_address), remaining_types)
                     return .Variable(v) |< tail
                 case (let head, _) where head == .Omitted:
                     fatalError("Ommitted operand type passed to decode_operands")
@@ -222,7 +222,7 @@ struct Instruction {
             }
         }
         
-        func has_store(opcode: ByteCode)(_ ver: Version) -> Bool {
+        func has_store(opcode: ByteCode, _ ver: Version) -> Bool {
             switch opcode {
                 case .OP1_143: return Story.v4_or_lower(ver)
                 case .OP0_181: return Story.v4_or_higher(ver)
@@ -240,8 +240,8 @@ struct Instruction {
             }
         }
         
-        func decode_store(store_address: ByteAddress)(_ opcode: ByteCode)(_ ver: Version) -> VariableLocation? {
-            if has_store(opcode)(ver) {
+        func decode_store(store_address: ByteAddress, _ opcode: ByteCode, _ ver: Version) -> VariableLocation? {
+            if has_store(opcode, ver) {
                 let store_byte = read_byte(store_address)
                 return .Some(decode_variable(store_byte))
             } else {
@@ -249,11 +249,11 @@ struct Instruction {
             }
         }
         
-        func get_store_length(opcode: ByteCode)(_ ver: Version) -> Int {
-            return has_store(opcode)(ver) ? 1 : 0
+        func get_store_length(opcode: ByteCode, _ ver: Version) -> Int {
+            return has_store(opcode, ver) ? 1 : 0
         }
         
-        func has_branch(opcode: ByteCode)(_ ver: Version) -> Bool {
+        func has_branch(opcode: ByteCode, _ ver: Version) -> Bool {
             switch opcode {
                 case .OP0_181: return Story.v3_or_lower(ver)
                 case .OP0_182: return Story.v3_or_lower(ver)
@@ -265,12 +265,12 @@ struct Instruction {
             }
         }
         
-        func decode_branch(branch_code_address: InstructionAddress)(_ opcode: ByteCode)(_ ver: Version) -> (Bool, BranchAddress)? {
-            if has_branch(opcode)(ver) {
+        func decode_branch(branch_code_address: InstructionAddress, _ opcode: ByteCode, _ ver: Version) -> (Bool, BranchAddress)? {
+            if has_branch(opcode, ver) {
                 let high = read_byte(branch_code_address)
-                let sense = fetch_bit(bit7)(high)
-                let bottom6 = fetch_bits(bit5)(size6)(high)
-                let offset = when { fetch_bit(bit6)(high) }.then {
+                let sense = fetch_bit(bit7, high)
+                let bottom6 = fetch_bits(bit5, size6, high)
+                let offset = when { fetch_bit(bit6, high) }.then {
                     bottom6
                 }.otherwise {
                     let low = read_byte(inc_byte_addr(branch_code_address))
@@ -282,8 +282,8 @@ struct Instruction {
                         case 0: return (sense, BranchAddress.ReturnTrue)
                         case 1: return (sense, BranchAddress.ReturnFalse)
                         default:
-                            let branch_length = fetch_bit(bit6)(high) ? 1 : 2
-                            let address_after = inc_byte_addr_by(branch_length)(branch_length)
+                            let branch_length = fetch_bit(bit6, high) ? 1 : 2
+                            let address_after = inc_byte_addr_by(branch_length, branch_length)
                             let branch_target = InstructionAddress(address_after + offset - 2)
                             return (sense, BranchAddress.BranchAddress(branch_target))
                     }
@@ -294,10 +294,10 @@ struct Instruction {
             }
         }
         
-        func get_branch_length(branch_code_address: InstructionAddress)(_ opcode: ByteCode)(_ ver: Version) -> Int {
-            if has_branch(opcode)(ver) {
+        func get_branch_length(branch_code_address: InstructionAddress, _ opcode: ByteCode, _ ver: Version) -> Int {
+            if has_branch(opcode, ver) {
                 let b = read_byte(branch_code_address)
-                return fetch_bit(bit6)(b) ? 1 : 2
+                return fetch_bit(bit6, b) ? 1 : 2
             } else {
                 return 0
             }

@@ -13,19 +13,19 @@ func charstring_to_string(char_string: CharString) -> String {
     }
 }
 
-func accumulate_strings_loop(to_string: Int -> String)(_ start: Int)(_ max: Int) -> String {
-    func aux(acc: String)(_ i: Int) -> String {
+func accumulate_strings_loop(to_string: Int -> String, _ start: Int, _ max: Int) -> String {
+    func aux(acc: String, _ i: Int) -> String {
         if i >= max {
             return acc
         } else {
-            return aux(acc + to_string(i))(i + 1)
+            return aux(acc + to_string(i), i + 1)
         }
     }
     
-    return aux("")(start)
+    return aux("", start)
 }
 
-func accumulate_strings<T>(to_string: T -> String)(_ items: [T]) -> String {
+func accumulate_strings<T>(to_string: T -> String, _ items: [T]) -> String {
     func folder(text: String, item: T) -> String {
         return text + to_string(item)
     }

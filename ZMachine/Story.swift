@@ -42,8 +42,8 @@ struct Story {
         if len < header_size {
             fatalError("\(filename) is not a valid story file (its way too short!)")
         } else {
-            let high = dereference_string(address_of_high_byte(static_memory_base_offset))(file)
-            let low = dereference_string(address_of_low_byte(static_memory_base_offset))(file)
+            let high = dereference_string(address_of_high_byte(static_memory_base_offset), file)
+            let low = dereference_string(address_of_low_byte(static_memory_base_offset), file)
             let dynamic_length = high * 256 + low
             if dynamic_length > len {
                 fatalError("\(filename) is not a valid story file (its too short!)")
@@ -57,27 +57,27 @@ struct Story {
     
     static func dictionary_base(story: Story) -> DictionaryBase {
         let dictionary_base_offset = WordAddress(8)
-        return DictionaryBase(read_word(story)(dictionary_base_offset))
+        return DictionaryBase(read_word(story, dictionary_base_offset))
     }
     
-    static func read_word(story: Story)(_ address: ByteAddress) -> Word {
-        let high = read_byte(story)(address_of_high_byte(address))
-        let low = read_byte(story)(address_of_low_byte(address))
+    static func read_word(story: Story, _ address: ByteAddress) -> Word {
+        let high = read_byte(story, address_of_high_byte(address))
+        let low = read_byte(story, address_of_low_byte(address))
         return Word(256 * high + low)
     }
     
-    static func read_byte(story: Story)(_ address: ByteAddress) -> Char {
+    static func read_byte(story: Story, _ address: ByteAddress) -> Char {
         let dynamic_size = ImmutableBytes.size(story.dynamic_memory)
-        if is_in_range(address)(dynamic_size) {
-            return ImmutableBytes.read_byte(story.dynamic_memory)(address)
+        if is_in_range(address, dynamic_size) {
+            return ImmutableBytes.read_byte(story.dynamic_memory, address)
         } else {
-            let static_addr = dec_byte_addr_by(address)(dynamic_size)
-            return dereference_string(static_addr)(story.static_memory)
+            let static_addr = dec_byte_addr_by(address, dynamic_size)
+            return dereference_string(static_addr, story.static_memory)
         }
     }
     
     static func version(story: Story) -> Version {
-        switch read_byte(story)(version_offset) {
+        switch read_byte(story, version_offset) {
             case 1: return .V1
             case 2: return .V2
             case 3: return .V3
@@ -120,7 +120,7 @@ struct Story {
     
     static func object_table_base(story: Story) -> ObjectBase {
         let object_table_base_offset = WordAddress(10)
-        return ObjectBase(read_word(story)(object_table_base_offset))
+        return ObjectBase(read_word(story, object_table_base_offset))
     }
 }
 

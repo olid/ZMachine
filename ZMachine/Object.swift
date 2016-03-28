@@ -28,55 +28,55 @@ struct Object {
         return Story.v3_or_lower(Story.version(story)) ? 9 : 14
     }
     
-    static func address(story: Story)(_ obj: ObjectNumber) -> ObjectAddress {
+    static func address(story: Story, _ obj: ObjectNumber) -> ObjectAddress {
         let object_tree_base = ObjectTreeBase(tree_base(story))
         let entry_siz = entry_size(story)
         return ObjectAddress(object_tree_base + (obj - 1) * entry_siz)
     }
     
-    static func parent(story: Story)(_ obj: ObjectNumber) -> ObjectNumber {
-        let addr = ObjectAddress(address(story)(obj))
+    static func parent(story: Story, _ obj: ObjectNumber) -> ObjectNumber {
+        let addr = ObjectAddress(address(story, obj))
         if Story.v3_or_lower(Story.version(story)) {
-            return ObjectNumber(Story.read_byte(story)(ByteAddress(addr + 4)))
+            return ObjectNumber(Story.read_byte(story, ByteAddress(addr + 4)))
         } else {
-            return ObjectNumber(Story.read_word(story)(WordAddress(addr + 6)))
+            return ObjectNumber(Story.read_word(story, WordAddress(addr + 6)))
         }
     }
     
-    static func sibling(story: Story)(_ obj: ObjectNumber) -> ObjectNumber {
-        let addr = ObjectAddress(address(story)(obj))
+    static func sibling(story: Story, _ obj: ObjectNumber) -> ObjectNumber {
+        let addr = ObjectAddress(address(story, obj))
         if Story.v3_or_lower(Story.version(story)) {
-            return ObjectNumber(Story.read_byte(story)(ByteAddress(addr + 5)))
+            return ObjectNumber(Story.read_byte(story, ByteAddress(addr + 5)))
         } else {
-            return ObjectNumber(Story.read_word(story)(WordAddress(addr + 8)))
+            return ObjectNumber(Story.read_word(story, WordAddress(addr + 8)))
         }
     }
     
-    static func child(story: Story)(_ obj: ObjectNumber) -> ObjectNumber {
-        let addr = ObjectAddress(address(story)(obj))
+    static func child(story: Story, _ obj: ObjectNumber) -> ObjectNumber {
+        let addr = ObjectAddress(address(story, obj))
         if Story.v3_or_lower(Story.version(story)) {
-            return ObjectNumber(Story.read_byte(story)(ByteAddress(addr + 6)))
+            return ObjectNumber(Story.read_byte(story, ByteAddress(addr + 6)))
         } else {
-            return ObjectNumber(Story.read_word(story)(WordAddress(addr + 10)))
+            return ObjectNumber(Story.read_word(story, WordAddress(addr + 10)))
         }
     }
     
-    static func property_header_address(story: Story)(_ obj: ObjectAddress) -> PropertyHeaderAddress {
+    static func property_header_address(story: Story, _ obj: ObjectAddress) -> PropertyHeaderAddress {
         let object_property_offset = Story.v3_or_lower(Story.version(story)) ? 7 : 12
-        let addr = ObjectAddress(address(story)(obj))
-        return PropertyHeaderAddress(Story.read_word(story)(WordAddress(addr + object_property_offset)))
+        let addr = ObjectAddress(address(story, obj))
+        return PropertyHeaderAddress(Story.read_word(story, WordAddress(addr + object_property_offset)))
     }
     
-    static func name(story: Story)(_ n: Int) -> String {
-        let addr = property_header_address(story)(n)
-        let length = Story.read_byte(story)(addr)
+    static func name(story: Story, _ n: Int) -> String {
+        let addr = property_header_address(story, n)
+        let length = Story.read_byte(story, addr)
         return length == 0 ? "<unnamed>"
-            : ZString.read(story)(ZStringAddress(addr + 1))
+            : ZString.read(story, ZStringAddress(addr + 1))
     }
     
     static func count(story: Story) -> Int {
         let table_start = tree_base(story)
-        let table_end = property_header_address(story)(ObjectAddress(1))
+        let table_end = property_header_address(story, ObjectAddress(1))
         let size = entry_size(story)
         return (table_end - table_start) / size
     }
@@ -86,14 +86,14 @@ struct Object {
         
         func to_string(i: Int) -> String {
             let current = ObjectAddress(i)
-            let parent_obj = parent(story)(current)
-            let sibling_obj = sibling(story)(current)
-            let child_obj = child(story)(current)
-            let obj_name = name(story)(i)
+            let parent_obj = parent(story, current)
+            let sibling_obj = sibling(story, current)
+            let child_obj = child(story, current)
+            let obj_name = name(story, i)
             return String(format: "%02x: %02x %02x %02x %@\n", arguments: [i, parent_obj, sibling_obj, child_obj, obj_name])
         }
         
-        return accumulate_strings_loop(to_string)(1)(object_count + 1)
+        return accumulate_strings_loop(to_string, 1, object_count + 1)
     }
     
     static func roots(story: Story) -> [ObjectNumber] {
@@ -101,7 +101,7 @@ struct Object {
             let current = obj
             if current == invalid_object {
                 return acc
-            } else if parent(story)(current) == invalid_object {
+            } else if parent(story, current) == invalid_object {
                 return aux(obj - 1, acc: current |< acc)
             } else {
                 return aux(obj - 1, acc:  acc)
@@ -116,9 +116,9 @@ struct Object {
             if obj == invalid_object {
                 return acc
             } else {
-                let obj_name = name(story)(obj)
-                let child_obj = child(story)(obj)
-                let sibling_obj = sibling(story)(obj)
+                let obj_name = name(story, obj)
+                let child_obj = child(story, obj)
+                let sibling_obj = sibling(story, obj)
                 let object_text = String(format: "%@%@\n", arguments: [indent, obj_name])
                 let with_object = acc + object_text
                 let new_indent = "|   " + indent
@@ -131,7 +131,7 @@ struct Object {
             return aux("", indent: "", obj: obj)
         }
         
-        return accumulate_strings(to_string)(roots(story))
+        return accumulate_strings(to_string, roots(story))
     }
 }
 
