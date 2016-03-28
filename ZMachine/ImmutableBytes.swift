@@ -23,8 +23,8 @@ struct ImmutableBytes {
         return bytes.original_bytes.count
     }
     
-    static func read_byte(bytes: ImmutableBytes)(_ address: ByteAddress) -> Char {
-        if is_out_of_range(address)(size(bytes)) {
+    static func read_byte(bytes: ImmutableBytes, _ address: ByteAddress) -> Char {
+        if is_out_of_range(address, size(bytes)) {
             fatalError("Address is out of range")
         } else {
             if bytes.edits.mem(address) {
@@ -35,8 +35,8 @@ struct ImmutableBytes {
         }
     }
     
-    static func write_byte(bytes: ImmutableBytes)(_ address: ByteAddress)(_ value: Char) -> ImmutableBytes {
-        if is_out_of_range(address)(size(bytes)) {
+    static func write_byte(bytes: ImmutableBytes, _ address: ByteAddress, _ value: Char) -> ImmutableBytes {
+        if is_out_of_range(address, size(bytes)) {
             fatalError("Address is out of range")
         } else {
             let addr = Int(address)
