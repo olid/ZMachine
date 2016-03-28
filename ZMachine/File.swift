@@ -5,10 +5,7 @@
 
 import Foundation
 
-func get_file(filename: String) -> CharString {
-    let docsPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .AllDomainsMask, true).first!
-    let path = "\(docsPath)/\(filename)"
-    
+func get_file(path: String) -> CharString {
     if let data = NSData(contentsOfFile: path) {
         let count = data.length / sizeof(UInt32)
         var longArray = [UInt32](count: count, repeatedValue: 0)
@@ -26,4 +23,3 @@ func get_file(filename: String) -> CharString {
     }
     fatalError("Could not load file '\(path)'")
 }
-
